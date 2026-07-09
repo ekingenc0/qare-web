@@ -38,20 +38,23 @@ const SERVICES = [
 ]
 
 const STEPS = [
-  { num: '01', time: 'İlk 10 dakika', title: 'Görüşme', desc: 'WhatsApp veya yüz yüze — ne iş yaptığınızı ve kim için olduğunu netleştiriyoruz.' },
-  { num: '02', time: '24 saat içinde', title: 'Taslak', desc: 'Logo, marka renkleri ve menünüzle ilk taslağı hazırlıyoruz.' },
-  { num: '03', time: 'Beğenene kadar', title: 'Onay', desc: 'Her detayı sizinle birlikte düzeltiyoruz. "Mükemmel" deyinceye kadar devam.' },
-  { num: '04', time: 'Aynı gün', title: 'Yayında', desc: 'QR kod canlıya alınır, masa etiketleriniz size ulaşır.' },
+  { num: '01', time: 'İlk 10 dakika', title: 'Görüşme', desc: 'WhatsApp veya yüz yüze — ne iş yaptığınızı ve kim için olduğunu netleştiriyoruz.', color: 'warm' },
+  { num: '02', time: '24 saat içinde', title: 'Taslak', desc: 'Logo, marka renkleri ve menünüzle ilk taslağı hazırlıyoruz.', color: 'teal' },
+  { num: '03', time: 'Beğenene kadar', title: 'Onay', desc: 'Her detayı sizinle birlikte düzeltiyoruz. "Mükemmel" deyinceye kadar devam.', color: 'rose' },
+  { num: '04', time: 'Aynı gün', title: 'Yayında', desc: 'QR kod canlıya alınır, masa etiketleriniz size ulaşır.', color: 'violet' },
 ]
 
 const SECTORS = [
-  { icon: '☕', name: 'Kafe & Restoran', desc: 'Kağıt menü maliyetinden ve sürekli baskıdan kurtulun.' },
-  { icon: '🏨', name: 'Otel & Butik', desc: 'Oda servisi menüsünden SPA hizmetlerine tek tıkla erişim.' },
-  { icon: '✂️', name: 'Kuaför & Güzellik', desc: 'Hizmet listeniz, fiyatlarınız, randevu için tek dokunuş.' },
-  { icon: '🛍️', name: 'Mağaza & Butik', desc: 'Kampanyaları, indirim kodlarını, ürünleri dijitalde öne çıkarın.' },
-  { icon: '🍷', name: 'Bar & Gece Kulübü', desc: 'Hızlı değişen kokteyl listesini tek bağlantıda güncelleyin.' },
-  { icon: '🦷', name: 'Klinik & Sağlık', desc: 'Hizmetler, fiyatlar ve online randevu için profesyonel yüz.' },
+  { icon: '☕', name: 'Kafe & Restoran', desc: 'Kağıt menü maliyetinden ve sürekli baskıdan kurtulun.', color: 'warm' },
+  { icon: '🏨', name: 'Otel & Butik', desc: 'Oda servisi menüsünden SPA hizmetlerine tek tıkla erişim.', color: 'violet' },
+  { icon: '✂️', name: 'Kuaför & Güzellik', desc: 'Hizmet listeniz, fiyatlarınız, randevu için tek dokunuş.', color: 'rose' },
+  { icon: '🛍️', name: 'Mağaza & Butik', desc: 'Kampanyaları, indirim kodlarını, ürünleri dijitalde öne çıkarın.', color: 'teal' },
+  { icon: '🍷', name: 'Bar & Gece Kulübü', desc: 'Hızlı değişen kokteyl listesini tek bağlantıda güncelleyin.', color: 'warm' },
+  { icon: '🦷', name: 'Klinik & Sağlık', desc: 'Hizmetler, fiyatlar ve online randevu için profesyonel yüz.', color: 'teal' },
 ]
+
+const STEPS_COLORS = ['warm', 'teal', 'rose', 'violet']
+const VAADE_COLORS = ['warm', 'teal', 'rose', 'violet']
 
 const PLANS = [
   {
@@ -95,10 +98,10 @@ const PLANS = [
 ]
 
 const VAADES = [
-  { big: '0,8', em: 's', title: 'Açılış Süresi', desc: 'Telefon kamerası QR\'ı okuttuktan sonra menü açılır.' },
-  { big: '01', em: 'Ocak 2026', title: 'Yasal Hazır', desc: 'Menü Şeffaflığı Yönetmeliği ile %100 uyumlu.' },
-  { big: '24', em: 'sa', title: 'İlk Taslak', desc: 'Görüşmeden 24 saat içinde yayına hazır taslak.' },
-  { big: '∞', em: '', title: 'Sınırsız Revizyon', desc: 'Beğenmediğiniz her detayı, sınır olmadan değiştiririz.' },
+  { big: '0,8', em: 's', title: 'Açılış Süresi', desc: 'Telefon kamerası QR\'ı okuttuktan sonra menü açılır.', color: 'warm' },
+  { big: '01', em: 'Ocak 2026', title: 'Yasal Hazır', desc: 'Menü Şeffaflığı Yönetmeliği ile %100 uyumlu.', color: 'rose' },
+  { big: '24', em: 'sa', title: 'İlk Taslak', desc: 'Görüşmeden 24 saat içinde yayına hazır taslak.', color: 'teal' },
+  { big: '∞', em: '', title: 'Sınırsız Revizyon', desc: 'Beğenmediğiniz her detayı, sınır olmadan değiştiririz.', color: 'violet' },
 ]
 
 const FAQS = [
@@ -239,10 +242,9 @@ function FAQItem({ item, index, isOpen, onClick }) {
   )
 }
 
-function VaadeItem({ big, em, title, desc, delay = 0 }) {
-  // count-up animasyonu için sadece sayısal / ikonik değerler için bir efekt
+function VaadeItem({ big, em, title, desc, delay = 0, color = 'warm' }) {
   return (
-    <div className="vaade" style={{ transitionDelay: `${delay}ms` }}>
+    <div className={`vaade ${color}`} style={{ transitionDelay: `${delay}ms` }}>
       <div className="big">{big}{em && <em>{em}</em>}</div>
       <h4>{title}</h4>
       <p>{desc}</p>
@@ -313,7 +315,22 @@ export default function App() {
                 <a href="#iletisim" className="btn btn-primary">WhatsApp'tan Yazın</a>
                 <a href="#hizmetler" className="btn btn-outline">Hizmetleri İncele</a>
               </div>
-              <div className="hero-fine">İlk görüşme 10 dakika · Kurulum 24 saat · Sınırsız revizyon</div>
+              <div className="hero-trust">
+                <div className="trust-item">
+                  <span className="trust-num">10dk</span>
+                  <span className="trust-label">görüşme</span>
+                </div>
+                <div className="trust-divider" />
+                <div className="trust-item">
+                  <span className="trust-num">24s</span>
+                  <span className="trust-label">taslak</span>
+                </div>
+                <div className="trust-divider" />
+                <div className="trust-item">
+                  <span className="trust-num">∞</span>
+                  <span className="trust-label">revizyon</span>
+                </div>
+              </div>
             </div>
             <div data-reveal>
               <QrArt />
@@ -373,7 +390,7 @@ export default function App() {
             <div className="sectors-grid">
               {SECTORS.map((s) => (
                 <article key={s.name} className="sector-card" data-reveal>
-                  <div className="sector-icon" aria-hidden="true">{s.icon}</div>
+                  <div className={`sector-icon ${s.color}`} aria-hidden="true">{s.icon}</div>
                   <h4>{s.name}</h4>
                   <p>{s.desc}</p>
                 </article>
@@ -392,7 +409,7 @@ export default function App() {
             </div>
             <div className="process">
               {STEPS.map((s) => (
-                <article key={s.num} className="step" data-reveal>
+                <article key={s.num} className={`step ${s.color}`} data-reveal>
                   <div className="step-num">{s.num}</div>
                   <span className="time">{s.time}</span>
                   <h3>{s.title}</h3>
@@ -448,16 +465,14 @@ export default function App() {
         <section className="founder divider">
           <div className="wrap">
             <div className="founder-card" data-reveal>
-              <div className="founder-avatar" aria-hidden="true">E</div>
+              <div className="founder-avatar" aria-label="Qare">
+                <img src="/qare-icon-white.png" alt="" />
+              </div>
               <div>
                 <blockquote>
                   QR menü, küçük işletmenin en düşük maliyetli dijital dönüşümü.
                   Bunu herkes için erişilebilir kılmak istedik.
                 </blockquote>
-                <div className="sig">
-                  <span className="sig-name">Ekrem</span>
-                  <span className="sig-role">Kurucu · Qare</span>
-                </div>
               </div>
             </div>
           </div>
@@ -501,7 +516,6 @@ export default function App() {
       <footer>
         <div className="wrap">
           <div className="footer-grid">
-            <Logo />
             <div className="footer-links">
               <a href="#hizmetler">Hizmetler</a>
               <a href="#fiyat">Fiyatlandırma</a>

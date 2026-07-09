@@ -1,23 +1,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg: #0a0a0a;
-  --bg-elev: #11111133;
-  --bg-elev-2: #141414;
-  --bg-card: #12121200;
-  --surface: rgba(242, 237, 227, 0.03);
-  --surface-2: rgba(242, 237, 227, 0.06);
-  --text: #c9c4b8;
-  --text-muted: #8a877c;
-  --text-dim: #5e5c54;
-  --text-h: #f2ede3;
-  --border: rgba(242, 237, 227, 0.08);
-  --border-strong: rgba(242, 237, 227, 0.14);
-  --accent: #f2ede3;
-  --accent-strong: #d9d3c5;
-  --accent-soft: rgba(242, 237, 227, 0.08);
-  --accent-border: rgba(242, 237, 227, 0.22);
-  --accent-ink: #0a0a0a;
+  --bg: #181612;
+  --bg-elev: #211e1a66;
+  --bg-elev-2: #25211c;
+  --bg-card: #1c191600;
+  --surface: rgba(242, 237, 227, 0.06);
+  --surface-2: rgba(242, 237, 227, 0.11);
+  --text: #d4cfc3;
+  --text-muted: #aaa69b;
+  --text-dim: #76736b;
+  --text-h: #f6f3ea;
+  --border: rgba(242, 237, 227, 0.1);
+  --border-strong: rgba(242, 237, 227, 0.18);
+  --accent: #f4efe6;
+  --accent-strong: #ebe6da;
+  --accent-soft: rgba(242, 237, 227, 0.12);
+  --accent-border: rgba(242, 237, 227, 0.26);
+  --accent-ink: #181612;
+  /* Single warm accent — used vibrantly but consistently */
+  --warm: #d4a85a;
+  --warm-soft: rgba(212, 168, 90, 0.16);
+  --warm-border: rgba(212, 168, 90, 0.4);
+  --teal: #d4a85a;
+  --teal-soft: rgba(212, 168, 90, 0.16);
+  --teal-border: rgba(212, 168, 90, 0.4);
+  --rose: #d4a85a;
+  --rose-soft: rgba(212, 168, 90, 0.16);
+  --rose-border: rgba(212, 168, 90, 0.4);
+  --violet: #d4a85a;
+  --violet-soft: rgba(212, 168, 90, 0.16);
+  --violet-border: rgba(212, 168, 90, 0.4);
   --radius: 18px;
   --radius-sm: 12px;
   --radius-xs: 8px;
@@ -28,6 +41,7 @@
 }
 
 * { box-sizing: border-box; }
+html, body { overflow-x: hidden; }
 html { scroll-behavior: smooth; }
 
 body {
@@ -39,9 +53,8 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   background-image:
-    radial-gradient(ellipse 80% 50% at 80% -10%, rgba(242, 237, 227, 0.05), transparent),
-    radial-gradient(ellipse 60% 40% at 0% 0%, rgba(242, 237, 227, 0.03), transparent);
-  background-attachment: fixed;
+    radial-gradient(ellipse 80% 60% at 85% -10%, rgba(212, 168, 90, 0.1), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 10% 50%, rgba(212, 168, 90, 0.05), transparent 55%);
 }
 
 ::selection { background: var(--accent); color: var(--accent-ink); }
@@ -191,7 +204,34 @@ header {
 .hero {
   padding: 88px 0 72px;
   position: relative;
+  overflow: hidden;
 }
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  right: 0;
+  width: 90%;
+  height: 90%;
+  background:
+    radial-gradient(circle at center, rgba(212, 168, 90, 0.22), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60%;
+  height: 60%;
+  background:
+    radial-gradient(circle at center, rgba(212, 168, 90, 0.12), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero .wrap { position: relative; z-index: 1; }
 .hero .wrap {
   display: grid;
   grid-template-columns: 1.15fr 1fr;
@@ -233,19 +273,54 @@ header {
   gap: 12px;
 }
 
-.hero-fine {
-  margin-top: 28px;
-  font-size: 0.82rem;
-  color: var(--text-dim);
+.hero-trust {
+  margin-top: 36px;
   display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--warm-border);
+  border-radius: var(--radius);
+  max-width: 520px;
+  overflow: hidden;
+}
+.trust-item {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  transition: background 0.25s;
 }
-.hero-fine::before {
-  content: '✓';
-  color: var(--accent);
-  font-weight: 700;
+.trust-item:hover { background: var(--warm-soft); }
+.trust-num {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--warm);
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
+.trust-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+}
+.trust-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--warm-border);
+  opacity: 0.5;
+}
+
+.hero-fine { display: none; }
 
 /* ---------- QR code art (21×21 modules) ---------- */
 .qr-stage {
@@ -361,9 +436,16 @@ header {
 .law-banner {
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(90deg, rgba(242, 237, 227, 0.05), transparent 70%);
+  background: var(--surface);
   padding: 18px 0;
 }
+.law-banner a {
+  color: var(--warm);
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 0.92rem;
+}
+.law-banner a:hover { color: var(--text-h); }
 .law-banner .wrap {
   display: flex;
   align-items: center;
@@ -373,13 +455,6 @@ header {
 }
 .law-banner p { font-size: 0.95rem; color: var(--text-muted); }
 .law-banner strong { color: var(--text-h); font-weight: 600; }
-.law-banner a {
-  color: var(--accent);
-  font-weight: 600;
-  white-space: nowrap;
-  font-size: 0.92rem;
-}
-.law-banner a:hover { color: var(--text-h); }
 
 /* ---------- Vaatler (concrete promises) ---------- */
 .vaades {
@@ -419,6 +494,15 @@ header {
 .vaade h4 { color: var(--text-h); }
 .vaade p { font-size: 0.88rem; color: var(--text-muted); }
 
+/* Vaade color variants — big number gets the color */
+.vaade.warm .big,
+.vaade.teal .big,
+.vaade.rose .big,
+.vaade.violet .big {
+  color: var(--warm);
+  text-shadow: 0 0 36px rgba(212, 168, 90, 0.5);
+}
+
 /* ---------- Sections ---------- */
 section { padding: 96px 0; }
 .divider { border-top: 1px solid var(--border); }
@@ -440,9 +524,10 @@ section { padding: 96px 0; }
   transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
 }
 .service-card:hover {
-  border-color: var(--border-strong);
+  border-color: var(--warm-border);
   background: var(--surface-2);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 24px 60px -20px rgba(212, 168, 90, 0.22);
 }
 .service-card.featured {
   border-color: var(--accent-border);
@@ -545,6 +630,22 @@ section { padding: 96px 0; }
 }
 .step p { color: var(--text-muted); font-size: 0.92rem; max-width: 28ch; }
 
+/* Step color variants */
+.step.warm .step-num,
+.step.teal .step-num,
+.step.rose .step-num,
+.step.violet .step-num {
+  background: var(--warm-soft);
+  border-color: var(--warm-border);
+  color: var(--warm);
+}
+.step.warm .time,
+.step.teal .time,
+.step.rose .time,
+.step.violet .time {
+  color: var(--warm);
+}
+
 /* ---------- Sectors ---------- */
 .sectors-grid {
   display: grid;
@@ -564,19 +665,42 @@ section { padding: 96px 0; }
 .sector-card:hover {
   border-color: var(--accent-border);
   background: var(--surface-2);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+}
+.sector-card:has(.sector-icon.warm):hover,
+.sector-card:has(.sector-icon.teal):hover,
+.sector-card:has(.sector-icon.rose):hover,
+.sector-card:has(.sector-icon.violet):hover {
+  border-color: var(--warm-border);
+  background: var(--surface-2);
+  box-shadow: 0 20px 50px -20px rgba(212, 168, 90, 0.25);
 }
 .sector-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   background: var(--accent-soft);
   border: 1px solid var(--accent-border);
   display: grid;
   place-items: center;
   color: var(--accent);
   margin-bottom: 6px;
+  font-size: 1.3rem;
+  transition: transform 0.3s ease;
 }
+.sector-card:hover .sector-icon {
+  transform: scale(1.08) rotate(-3deg);
+}
+/* Sector color variants — all use single warm tone */
+.sector-icon.warm,
+.sector-icon.teal,
+.sector-icon.rose,
+.sector-icon.violet {
+  background: var(--warm-soft);
+  border-color: var(--warm-border);
+  color: var(--warm);
+}
+
 .sector-card h4 {
   font-family: var(--serif);
   font-weight: 500;
@@ -602,9 +726,9 @@ section { padding: 96px 0; }
   flex-direction: column;
 }
 .price-card.popular {
-  border-color: var(--accent);
-  box-shadow: var(--shadow);
-  background: linear-gradient(180deg, var(--accent-soft), var(--surface) 65%);
+  border-color: var(--warm);
+  box-shadow: 0 30px 80px -30px rgba(212, 168, 90, 0.4);
+  background: linear-gradient(180deg, var(--warm-soft), var(--surface) 65%);
 }
 .price-card.popular::after {
   content: 'Popüler';
@@ -782,15 +906,18 @@ section { padding: 96px 0; }
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  background: #0a0a0a;
+  border: 1px solid var(--warm-border);
   display: grid;
   place-items: center;
-  font-family: var(--serif);
-  font-size: 2.8rem;
-  font-weight: 500;
-  color: var(--accent-ink);
+  overflow: hidden;
   flex-shrink: 0;
-  border: 1px solid var(--border-strong);
+}
+.founder-avatar img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  border-radius: 50%;
 }
 .founder blockquote {
   margin: 0;
@@ -842,7 +969,7 @@ footer {
 }
 .footer-grid {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 28px;
   flex-wrap: wrap;
@@ -867,11 +994,18 @@ footer {
 }
 
 /* ---------- Responsive ---------- */
+@media (max-width: 1024px) {
+  .hero .wrap { gap: 40px; }
+  .services-grid { gap: 14px; }
+  .pricing-grid { gap: 14px; }
+}
+
 @media (max-width: 900px) {
-  .hero .wrap { grid-template-columns: 1fr; gap: 40px; }
+  .hero .wrap { grid-template-columns: 1fr; gap: 36px; text-align: left; }
   .qr-stage { max-width: 320px; margin: 0 auto; }
-  .services-grid, .pricing-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
-  .process { grid-template-columns: repeat(2, 1fr); }
+  .services-grid, .pricing-grid { grid-template-columns: 1fr; max-width: 520px; margin: 0 auto; }
+  .testimonials-grid { }
+  .process { grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .step::before { display: none; }
   .vaades-grid { grid-template-columns: repeat(2, 1fr); }
   .sectors-grid { grid-template-columns: repeat(2, 1fr); }
@@ -880,20 +1014,143 @@ footer {
   .founder-card { grid-template-columns: 1fr; gap: 24px; text-align: center; }
   .founder-avatar { margin: 0 auto; }
   .founder blockquote { font-size: 1.2rem; }
+  .step + .step { padding-left: 0; }
+  .section-head { margin-bottom: 36px; }
+  h1 { font-size: clamp(2rem, 9vw, 2.8rem); }
+  h2 { font-size: clamp(1.6rem, 6vw, 2rem); }
 }
 
 @media (max-width: 540px) {
   .wrap { padding: 0 20px; }
-  .nav { padding: 0 20px; height: 72px; }
-  section { padding: 64px 0; }
-  .hero { padding: 56px 0 48px; }
-  .vaades-grid { grid-template-columns: 1fr; }
-  .process { grid-template-columns: 1fr; }
-  .sectors-grid { grid-template-columns: 1fr; }
-  .pledge-card, .price-card, .service-card { padding: 26px 22px; }
-  .law-banner .wrap { flex-direction: column; align-items: flex-start; }
-  .footer-bottom { flex-direction: column; }
-  .pricing-foot { flex-direction: column; }
+  .nav { padding: 0 20px; height: 60px; gap: 12px; }
+  .logo-img { height: 44px; }
+  .btn { padding: 14px 20px; font-size: 0.95rem; }
+
+  /* Hero — mobile-first, ferah ve göze hitap eden */
+  .hero { padding: 32px 0 40px; }
+  .hero .wrap { gap: 32px; }
+  .hero .eyebrow {
+    font-size: 0.62rem;
+    margin-bottom: 16px;
+    padding: 5px 12px;
+    border: 1px solid var(--warm-border);
+    border-radius: 999px;
+    background: var(--warm-soft);
+    color: var(--warm);
+    display: inline-flex;
+  }
+  .hero .eyebrow::before { display: none; }
+  .hero h1 {
+    font-size: 2.2rem;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+  }
+  .hero .lead {
+    font-size: 1rem;
+    margin: 18px 0 26px;
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+  .hero-fine { display: none; }
+  .hero-trust {
+    margin-top: 22px;
+    padding: 14px 16px;
+    gap: 12px;
+    max-width: 100%;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .trust-num { font-size: 1.15rem; }
+  .trust-label { font-size: 0.68rem; }
+  .trust-divider { width: 1px; align-self: stretch; height: auto; background: var(--warm-border); opacity: 0.4; }
+  .hero-ctas { flex-direction: column; gap: 10px; }
+  .hero-ctas .btn { width: 100%; flex: none; }
+  .hero-ctas .btn-outline { display: none; }
+
+  /* QR — küçük ama şık, ortalanmış */
+  .qr-stage {
+    max-width: 220px;
+    margin: 0 auto;
+  }
+  .qr-caption { font-size: 0.72rem; padding: 5px 12px; bottom: -12px; }
+
+  /* Bölümler — ferah boşluk */
+  section { padding: 56px 0; }
+  .section-head { margin-bottom: 36px; }
+  .section-head .eyebrow { margin-bottom: 14px; }
+  .section-head h2 { font-size: 1.65rem; line-height: 1.1; }
+  .section-head p { font-size: 0.95rem; margin-top: 12px; line-height: 1.55; }
+
+  /* Vaades — 2 kolon, ferah */
+  .vaades-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .vaade { padding: 20px 14px; gap: 6px; }
+  .vaade .big { font-size: 1.9rem; }
+  .vaade h4 { font-size: 0.85rem; }
+  .vaade p { font-size: 0.78rem; line-height: 1.4; }
+
+  /* Süreç — tek kolon, kart gibi */
+  .process { grid-template-columns: 1fr; gap: 12px; }
+  .step {
+    padding: 20px !important;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .step-num { width: 40px; height: 40px; font-size: 0.9rem; margin-bottom: 14px; }
+  .step h3 { font-size: 1.1rem; }
+  .step .time { font-size: 0.72rem; margin-bottom: 10px; }
+  .step p { font-size: 0.88rem; max-width: none; }
+
+  /* Sektörler — 2 kolon, güzel kartlar */
+  .sectors-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .sector-card { padding: 18px 14px; gap: 8px; }
+  .sector-card h4 { font-size: 0.92rem; }
+  .sector-card p { font-size: 0.78rem; line-height: 1.4; }
+  .sector-icon { width: 38px; height: 38px; font-size: 1.15rem; }
+
+  /* Hizmetler / fiyatlar — tek kolon, ferah kartlar */
+  .service-card, .price-card, .pledge-card { padding: 24px 20px; }
+  .service-card h3, .price-card h3 { font-size: 1.3rem; }
+  .price { font-size: 2rem; }
+  .price-note { font-size: 0.82rem; }
+  .price-card.popular::after { right: 16px; font-size: 0.62rem; padding: 4px 10px; }
+
+  /* Testimonials — mobil ferah */
+
+  /* Pledge — kart şeklinde */
+  .pledge-card { padding: 28px 22px; gap: 18px; }
+  .pledge-mark { width: 52px; height: 52px; font-size: 1.5rem; }
+  .pledge h3 { font-size: 1.4rem; }
+  .pledge p { font-size: 0.95rem; }
+
+  /* Kurucu */
+  .founder-card { gap: 20px; }
+  .founder-avatar { width: 72px; height: 72px; }
+  .founder-avatar img { width: 88%; height: 88%; }
+  .founder blockquote { font-size: 1.05rem; line-height: 1.45; }
+
+  /* SSS */
+  .faq-q { font-size: 0.98rem; padding: 20px 0; line-height: 1.3; }
+  .faq-a p { font-size: 0.9rem; line-height: 1.55; }
+
+  /* CTA */
+  .cta-section { padding: 56px 0; }
+  .cta-section h2 { font-size: 1.5rem; }
+  .cta-section p { font-size: 0.95rem; margin-bottom: 26px; }
+  .cta-section .hero-ctas .btn-outline { display: inline-flex; }
+
+  /* Law banner */
+  .law-banner { padding: 14px 0; }
+  .law-banner .wrap { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .law-banner p { font-size: 0.85rem; line-height: 1.45; }
+  .law-banner a { font-size: 0.85rem; }
+
+  /* Footer */
+  .footer-grid { justify-content: center; gap: 14px; margin-bottom: 14px; }
+  .footer-links { flex-wrap: wrap; gap: 12px; font-size: 0.85rem; justify-content: center; }
+  .footer-bottom { flex-direction: column; gap: 6px; font-size: 0.82rem; padding-top: 18px; }
+  .pricing-foot { flex-direction: column; gap: 4px; font-size: 0.82rem; }
+  .nav-links { display: none; }
 }
 
 /* Reveal on scroll */
