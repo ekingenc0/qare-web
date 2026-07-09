@@ -1,12 +1,5 @@
 services:
   qare-web:
     build: .
-    container_name: qare-web
     ports:
       - "3001:3001"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
