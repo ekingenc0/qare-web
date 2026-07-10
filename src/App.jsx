@@ -1,499 +1,368 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import './index.css'
+import { useState, useEffect, useRef, useMemo } from 'react'
+
+/* ============================
+   Data
+============================ */
+
+const NAV_LINKS = [
+  { label: 'Hizmetler', href: '#hizmetler' },
+  { label: 'Nasıl Çalışır', href: '#nasil' },
+  { label: 'SSS', href: '#sss' },
+]
 
 const SERVICES = [
   {
-    num: '01', title: 'QR Menü',
-    desc: 'Kağıt menüyü yasal olarak yeterli, saniyeler içinde açılan bir dijital menüye çeviriyoruz.',
-    items: [
-      'Markanıza özel tasarım',
-      'Telefonda saniyeler içinde açılır',
-      'Fiyat/ürün güncellemesi sizde',
-      'Baskıya hazır QR + masa etiketi',
-    ],
-    featured: false,
+    name: 'QR Menü Tasarımı',
+    desc: 'Telefondan okut, anında açılsın. Kağıt masrafı yok, baskı derdi yok, fiyat güncellemesi saniyeler.',
+    items: ['Markanıza özel tasarım', 'Sınırsız ürün ekleme', 'Tek QR kod, sonsuz güncelleme'],
   },
   {
-    num: '02', title: 'QR Menü + Web Sitesi',
-    desc: "Menünüzle birlikte işletmenizin Google'da bulunabilir, adres ve saatleriyle profesyonel bir web sitesi.",
-    items: [
-      'Tek sayfa kurumsal web sitesi',
-      'Harita, iletişim, sosyal medya bağlantıları',
-      'Mobil uyumludur, hızlı yüklenir',
-      'QR menüyle görsel bütünlük',
-    ],
+    name: 'QR Menü + Web Sitesi',
+    desc: 'Hem dijital menü hem de kurumsal web siteniz tek pakette. İşletmenizi dijitalde tam konumlandırın.',
+    items: ['Profesyonel QR menü', 'Modern kurumsal site', 'Google Maps + Instagram bağlantısı'],
     featured: true,
   },
   {
-    num: '03', title: 'Yalnızca Web Sitesi',
-    desc: 'Yeme-içme dışı işletmeler için sade, profesyonel bir dijital vitrin.',
-    items: [
-      'Kuaför, mağaza, ofis, klinik…',
-      'Hizmet/ürün listesi sayfası',
-      "WhatsApp'tan doğrudan iletişim",
-      "Google'da bulunabilirlik desteği",
-    ],
-    featured: false,
+    name: 'Sadece Web Sitesi',
+    desc: 'Menüye ihtiyacınız yoksa, sadece kurumsal web siteniz de yapılır. Aynı özen, aynı kalite.',
+    items: ['Özgün tasarım', 'Mobil uyumlu', 'Hızlı yükleme süresi'],
   },
 ]
+
+const SECTORS = ['Kafe', 'Restoran', 'Kuaför', 'Güzellik Salonu', 'Mağaza', 'Ofis', 'Klinik', 'Pastane', 'Bar', 'Oto Yıkama']
 
 const STEPS = [
-  { num: '01', time: 'İlk 10 dakika', title: 'Görüşme', desc: 'WhatsApp veya yüz yüze — ne iş yaptığınızı ve kim için olduğunu netleştiriyoruz.', color: 'warm' },
-  { num: '02', time: '24 saat içinde', title: 'Taslak', desc: 'Logo, marka renkleri ve menünüzle ilk taslağı hazırlıyoruz.', color: 'teal' },
-  { num: '03', time: 'Beğenene kadar', title: 'Onay', desc: 'Her detayı sizinle birlikte düzeltiyoruz. "Mükemmel" deyinceye kadar devam.', color: 'rose' },
-  { num: '04', time: 'Aynı gün', title: 'Yayında', desc: 'QR kod canlıya alınır, masa etiketleriniz size ulaşır.', color: 'violet' },
-]
-
-const SECTORS = [
-  { icon: '☕', name: 'Kafe & Restoran', desc: 'Kağıt menü maliyetinden ve sürekli baskıdan kurtulun.', color: 'warm' },
-  { icon: '🏨', name: 'Otel & Butik', desc: 'Oda servisi menüsünden SPA hizmetlerine tek tıkla erişim.', color: 'violet' },
-  { icon: '✂️', name: 'Kuaför & Güzellik', desc: 'Hizmet listeniz, fiyatlarınız, randevu için tek dokunuş.', color: 'rose' },
-  { icon: '🛍️', name: 'Mağaza & Butik', desc: 'Kampanyaları, indirim kodlarını, ürünleri dijitalde öne çıkarın.', color: 'teal' },
-  { icon: '🍷', name: 'Bar & Gece Kulübü', desc: 'Hızlı değişen kokteyl listesini tek bağlantıda güncelleyin.', color: 'warm' },
-  { icon: '🦷', name: 'Klinik & Sağlık', desc: 'Hizmetler, fiyatlar ve online randevu için profesyonel yüz.', color: 'teal' },
-]
-
-const STEPS_COLORS = ['warm', 'teal', 'rose', 'violet']
-const VAADE_COLORS = ['warm', 'teal', 'rose', 'violet']
-
-const PLANS = [
-  {
-    name: 'Başlangıç',
-    price: '1.250₺',
-    priceNote: 'tek seferlik',
-    items: [
-      'Tek sayfa QR menü',
-      'Markanıza uygun QR tasarımı',
-      'Baskıya hazır dosya',
-      'Sınırsız ürün/fiyat ekleme',
-    ],
-    popular: false, cta: 'btn-outline', label: 'Demek ki hızlı başlamak istiyorsunuz.',
-  },
-  {
-    name: 'Pro',
-    price: '2.900₺',
-    priceNote: 'tek seferlik',
-    items: [
-      'QR menü + tek sayfa kurumsal site',
-      'Harita, saatler, sosyal medya bağlantıları',
-      'Mobil uyumlu, hızlı tasarım',
-      'Masa etiketleri dahil',
-      '1 ay boyunca ücretsiz revizyon',
-    ],
-    popular: true, cta: 'btn-primary', label: 'İşletmenizin tüm dijital yüzeyleri.',
-  },
-  {
-    name: 'Premium',
-    price: '2.900₺',
-    priceSuffix: '+ 200₺/ay',
-    priceNote: 'kurulum + bakım',
-    items: [
-      'Pro paketin tüm özellikleri',
-      'Aylık içerik/fiyat güncellemesi',
-      'Instagram görsel desteği',
-      'Öncelikli destek, 24 saat dönüş',
-    ],
-    popular: false, cta: 'btn-outline', label: 'Sürekli güncel kalmak isteyenler için.',
-  },
-]
-
-const VAADES = [
-  { big: '0,8', em: 's', title: 'Açılış Süresi', desc: 'Telefon kamerası QR\'ı okuttuktan sonra menü açılır.', color: 'warm' },
-  { big: '01', em: 'Ocak 2026', title: 'Yasal Hazır', desc: 'Menü Şeffaflığı Yönetmeliği ile %100 uyumlu.', color: 'rose' },
-  { big: '24', em: 'sa', title: 'İlk Taslak', desc: 'Görüşmeden 24 saat içinde yayına hazır taslak.', color: 'teal' },
-  { big: '∞', em: '', title: 'Sınırsız Revizyon', desc: 'Beğenmediğiniz her detayı, sınır olmadan değiştiririz.', color: 'violet' },
+  { num: '01', time: '~30 dakika', title: 'Görüşme', desc: 'Ne istediğinizi anlıyoruz. Kısa bir görüşme, sıkıcı form yok.' },
+  { num: '02', time: '24 saat', title: 'Tasarım', desc: 'Marka kimliğinize uygun ilk taslağı hazırlıyoruz. Sizden önce, aklınızda canlanır.' },
+  { num: '03', time: 'Sınırsız', title: 'Onay', desc: 'Beğenene kadar değiştiyoruz. Revizyon sınırı yok, memnuniyet sınırı yok.' },
+  { num: '04', time: 'Aynı gün', title: 'Yayında', desc: 'Onayınız sonrası QR kodlarınız üretilir, menünüz yayına alınır. Hemen kullanırsınız.' },
 ]
 
 const FAQS = [
   {
-    q: 'QR menü gerçekten yasal zorunluluk mu?',
-    a: "Evet. 1 Ocak 2026'dan itibaren Türkiye'de yeme-içme işletmeleri için dijital/QR menü bulundurmak yasal zorunluluk. Kağıt menü tek başına yeterli kabul edilmiyor. Cezai risk altına girmeden geçmenin en kısa yolu: tek seferlik kurulumla tam uyumlu bir dijital menü.",
+    q: 'QR menü nasıl çalışır?',
+    a: 'Müşteriniz telefon kamerasıyla QR kodu okutur. Anlık olarak sizin tasarladığımız dijital menü açılır. Kağıt menü yok, yıpranma yok, fiyat değişimi saniyeler içinde.',
   },
   {
-    q: '10 dakikada başlayabilir miyiz?',
-    a: "Evet. WhatsApp'tan işletmenizin adını, birkaç fotoğrafını ve varsa logonuzu gönderdiğiniz an başlıyoruz. Görüşme 10 dakika sürer; sonrası bize ait.",
+    q: 'QR kodu nereye koymalıyız?',
+    a: 'Standart uygulama: masalara koymak yerine tek bir giriş noktasına koymak da yeterli. Çoğu müşteri tek noktayı okutur, menüyü telefonunda tutar. İkisi de mümkün, sizin mekanınıza göre birlikte karar veririz.',
   },
   {
-    q: 'Fiyatları / ürünleri kendim güncelleyebilir miyim?',
-    a: "Evet. Size basit bir panel veya link üzerinden güncelleme yöntemi gösteriyoruz. İsterseniz Premium pakette aylık güncellemeleri biz üstleniyoruz.",
+    q: 'Fiyat değiştirince QR yenileniyor mu?',
+    a: 'Hayır, aynı QR kod geçerli kalır. Siz sadece içeriği değiştirirsiniz (ya da biz değiştiririz), müşteriniz bir sonraki okutmada güncel halini görür.',
   },
   {
-    q: 'Aylık ödeme zorunlu mu?',
-    a: 'Hayır. Başlangıç ve Pro paketler tek seferlik ödemedir. Premium paketteki aylık bakım isteğe bağlıdır — beğenmezseniz tek seferlik pakete geçeriz, söz.',
+    q: 'Kurumsal web sitesi de yapıyor musunuz?',
+    a: 'Evet, Pro pakette hem QR menü hem de kurumsal web sitesi tek fiyata geliyor. İsterseniz sadece site de yapılır.',
   },
   {
-    q: 'Sadece web sitesi de yaptırabilir miyim, menü olmadan?',
-    a: 'Evet. Kuaför, mağaza, klinik, ofis gibi menüsü olmayan işletmeler için sade bir kurumsal web sitesi paketimiz de var. Aynı özen, aynı garanti.',
+    q: 'Ne kadar sürede hazır olur?',
+    a: 'QR menü tasarımı 24 saat içinde. Kurumsal web sitesi 3-5 iş günü içinde hazırlanır. Acil ise hızlandırılmış planımız var.',
   },
   {
-    q: 'Beğenmezsem ne olur?',
-    a: '"Mükemmel" deyene kadar çalışırız. Sınırsız revizyon dahil. Sonuçta sizin markanız — siz mutlu olmadan biz teslim etmeyiz.',
+    q: 'Aylık abonelik mi ödeyeceğim?',
+    a: 'Hayır. Qare\'nin modeli tek seferlik ödeme. Siteniz ve menünüz sizin. Aylık gizli aidat yok. Premium pakette bakım için 200₺/ay eklenir ama Başlangıç ve Pro tek seferlik.',
   },
 ]
 
-/* ------------ Helpers ------------ */
+const TRUST_STATS = [
+  { target: 48, suffix: 'saat', label: 'İlk taslak süresi', note: 'Acil ise hızlandırılmış plan var' },
+  { target: 100, suffix: '%', label: 'Yasal uyum', note: '2026 şeffaflık yönetmeliğine tam uyumlu' },
+  { target: 1, suffix: '×', label: 'Ödeme', note: 'Tek seferlik, aylık aidat yok' },
+  { target: 24, suffix: 'sa', label: 'Hızlı Yanıt', note: 'Mesajlarınıza saatler içinde döneriz' },
+]
+
+/* ============================
+   Hero QR Art (logo with effects)
+============================ */
+function HeroQrArt() {
+  return (
+    <div className="hero-qr-stage" data-reveal>
+      {/* Yumuşak glow halkası */}
+      <div className="hero-qr-glow" />
+      <div className="hero-qr-glow hero-qr-glow-2" />
+
+      {/* İçeride logo */}
+      <div className="hero-qr-logo">
+        <img src="/qare-icon-white.png" alt="" className="hero-qr-icon" />
+
+        {/* Etrafta dönen parçacık halkası */}
+        <div className="hero-qr-orbit">
+          <span className="hero-qr-dot" style={{ top: '6%', left: '50%' }} />
+          <span className="hero-qr-dot" style={{ top: '50%', right: '6%' }} />
+          <span className="hero-qr-dot" style={{ bottom: '6%', left: '50%' }} />
+          <span className="hero-qr-dot" style={{ top: '50%', left: '6%' }} />
+        </div>
+
+        {/* Quarter finder squares (köşe kareleri) */}
+        <div className="hero-qr-corner hero-qr-corner-tl" />
+        <div className="hero-qr-corner hero-qr-corner-tr" />
+        <div className="hero-qr-corner hero-qr-corner-bl" />
+        <div className="hero-qr-corner hero-qr-corner-br" />
+      </div>
+
+      <div className="hero-qr-caption">
+        <span className="hero-qr-dot-mini" />
+        Müşteriniz bu kareyi görüyor
+      </div>
+    </div>
+  )
+}
+
+/* ============================
+   Logo
+============================ */
 function Logo() {
   return (
-    <a href="#top" className="logo" aria-label="Qare anasayfa">
+    <a href="#top" className="logo" aria-label="Qare">
       <img src="/qare-logo-white.png" alt="Qare" className="logo-img" />
     </a>
   )
 }
 
-function QrArt() {
-  // 21×21 modüllü standart QR pattern. Üç köşe bulucu (finder pattern) + data
-  // modülleri (pseudorandom). Hücreler soldan-sağa, yukarıdan-aşağıya tek tek
-  // "taranıyor" hissiyle belirir; üstten geçen scan ışını bunu pekiştirir.
-  const SIZE = 21
+function Counter({ target, suffix }) {
+  const ref = useRef(null)
+  const [val, setVal] = useState(0)
+  const fired = useRef(false)
 
-  // Basit ama QR'ı andıran pattern üretici — köşe bulucular her zaman aynı,
-  // ortadaki modüller bir seeded "rastgele" pattern ile dolu.
-  const isFinder = (r, c) => {
-    const inSquare = (tr, tc) =>
-      r >= tr && r < tr + 7 && c >= tc && c < tc + 7
-    if (inSquare(0, 0) || inSquare(0, 14) || inSquare(14, 0)) {
-      const lr = r - (inSquare(0, 0) ? 0 : inSquare(0, 14) ? 0 : 14)
-      const lc = c - (inSquare(0, 0) ? 0 : inSquare(0, 14) ? 14 : 0)
-      // 7×7 finder: dış çerçeve + iç dolu kare + arada boşluk
-      const edge = lr === 0 || lr === 6 || lc === 0 || lc === 6
-      const core = lr >= 2 && lr <= 4 && lc >= 2 && lc <= 4
-      return edge || core
-    }
-    return null
-  }
-
-  const isTiming = (r, c) => {
-    if (r === 6 && c >= 8 && c <= 12) return (c % 2 === 0)
-    if (c === 6 && r >= 8 && r <= 12) return (r % 2 === 0)
-    return null
-  }
-
-  const cells = useMemo(() => {
-    const out = []
-    for (let r = 0; r < SIZE; r++) {
-      for (let c = 0; c < SIZE; c++) {
-        const f = isFinder(r, c)
-        if (f !== null) {
-          out.push({ r, c, on: f, kind: 'finder' })
-          continue
-        }
-        const t = isTiming(r, c)
-        if (t !== null) {
-          out.push({ r, c, on: t, kind: 'timing' })
-          continue
-        }
-        // Pseudorandom data (deterministic)
-        const seed = ((r * 31 + c * 17 + 7) ^ (r * c)) >>> 0
-        const on = (seed % 100) < 48
-        out.push({ r, c, on, kind: 'data' })
-      }
-    }
-    return out
-  }, [])
-
-  return (
-    <div className="qr-stage" aria-hidden="true">
-      <div className="qr-frame">
-        <div className="qr-scan" />
-        <div className="qr-grid">
-          {cells.map((cell) => (
-            <span
-              key={`${cell.r}-${cell.c}`}
-              className={`qr-cell ${cell.kind} ${cell.on ? 'on' : ''}`}
-              style={{ animationDelay: `${(cell.r * SIZE + cell.c) * 6}ms` }}
-            />
-          ))}
-        </div>
-      </div>
-      <div className="qr-caption">
-        <span className="dot" /> Müşteriniz bu kareyi görüyor
-      </div>
-    </div>
-  )
-}
-
-function FAQItem({ item, index, isOpen, onClick }) {
-  const answerRef = useRef(null)
-  const maxHeight = isOpen && answerRef.current
-    ? `${answerRef.current.scrollHeight}px`
-    : '0px'
-  return (
-    <div className={`faq-item${isOpen ? ' open' : ''}`}>
-      <button
-        id={`faq-q-${index}`}
-        className="faq-q"
-        onClick={onClick}
-        aria-expanded={isOpen}
-        aria-controls={`faq-a-${index}`}
-      >
-        {item.q}
-        <span className="plus" aria-hidden="true">+</span>
-      </button>
-      <div
-        id={`faq-a-${index}`}
-        className="faq-a"
-        style={{ maxHeight }}
-        role="region"
-        aria-labelledby={`faq-q-${index}`}
-      >
-        <p ref={answerRef}>{item.a}</p>
-      </div>
-    </div>
-  )
-}
-
-function VaadeItem({ big, em, title, desc, delay = 0, color = 'warm' }) {
-  return (
-    <div className={`vaade ${color}`} style={{ transitionDelay: `${delay}ms` }}>
-      <div className="big">{big}{em && <em>{em}</em>}</div>
-      <h4>{title}</h4>
-      <p>{desc}</p>
-    </div>
-  )
-}
-
-/* ------------ App ------------ */
-export default function App() {
-  const [openIndex, setOpenIndex] = useState(0)
-
-  // Reveal on scroll için basit observer
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    const els = document.querySelectorAll('[data-reveal]')
-    const io = new IntersectionObserver((entries) => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
-        if (e.isIntersecting) {
-          e.target.classList.add('is-in')
-          io.unobserve(e.target)
+        if (e.isIntersecting && !fired.current) {
+          fired.current = true
+          const start = performance.now()
+          const dur = 1200
+          const tick = (t) => {
+            const p = Math.min((t - start) / dur, 1)
+            const ease = 1 - Math.pow(1 - p, 3)
+            setVal(Math.round(target * ease))
+            if (p < 1) requestAnimationFrame(tick)
+          }
+          requestAnimationFrame(tick)
         }
       })
-    }, { threshold: 0.12 })
-    els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
+    }, { threshold: 0.5 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [target])
+
+  return <span ref={ref}>{val}{suffix}</span>
+}
+
+/* ============================
+   FAQ Item
+============================ */
+function FAQItem({ item, isOpen, onToggle }) {
+  return (
+    <div className={`faq-item ${isOpen ? 'open' : ''}`}>
+      <button className="faq-q" onClick={onToggle} aria-expanded={isOpen}>
+        <span>{item.q}</span>
+        <span className="faq-icon">+</span>
+      </button>
+      <div className="faq-a">
+        <p>{item.a}</p>
+      </div>
+    </div>
+  )
+}
+
+/* ============================
+   App
+============================ */
+export default function App() {
+  const [openFaq, setOpenFaq] = useState(null)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const els = document.querySelectorAll('[data-reveal]')
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e, i) => {
+          if (e.isIntersecting) {
+            const delay = parseInt(e.target.dataset.revealDelay || 0, 10)
+            setTimeout(() => e.target.classList.add('is-in'), delay)
+            observer.unobserve(e.target)
+          }
+        })
+      },
+      { threshold: 0.12 }
+    )
+    els.forEach((el, i) => {
+      const idx = parseInt(el.dataset.revealIdx || 0, 10)
+      el.dataset.revealDelay = String(idx * 80)
+      observer.observe(el)
+    })
+    return () => observer.disconnect()
   }, [])
 
-  const sections = useMemo(() => ({
-    hizmetler: 'Hizmetler',
-    surec: 'Nasıl Çalışır',
-    sektorler: 'Sektörler',
-    fiyat: 'Fiyatlandırma',
-    sss: 'SSS',
-    iletisim: 'İletişim',
-  }), [])
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 30)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
     <>
-      <a className="skip-link visually-hidden" href="#main">İçeriğe geç</a>
+      <a href="#main" className="skip-link">İçeriğe geç</a>
 
-      <header>
-        <div className="nav">
-          <Logo />
-          <nav className="links mobile-hide" aria-label="Ana gezinme">
-            {Object.entries(sections).slice(0, 4).map(([id, label]) => (
-              <a key={id} href={`#${id}`}>{label}</a>
-            ))}
-          </nav>
-          <a href="#iletisim" className="btn btn-primary">İletişime Geç</a>
+      {/* Background glow */}
+      <div className="bg-glow" aria-hidden="true">
+        <div className="bg-glow-orb bg-glow-orb-1" />
+        <div className="bg-glow-orb bg-glow-orb-2" />
+      </div>
+
+      {/* Header */}
+      <nav className={`nav ${scrolled ? 'scrolled' : ''}`} aria-label="Ana navigasyon">
+        <Logo />
+        <div className="nav-links">
+          {NAV_LINKS.map((l) => <a key={l.href} href={l.href}>{l.label}</a>)}
         </div>
-      </header>
+        <a href="#iletisim" className="btn btn-accent nav-cta">İletişime Geç</a>
+      </nav>
 
       <main id="main">
-        {/* HERO */}
-        <section className="hero" id="top">
+        {/* Hero */}
+        <section className="hero" id="top" data-reveal>
           <div className="wrap">
-            <div data-reveal>
-              <span className="eyebrow">2026 Menü Şeffaflığı Yönetmeliği yürürlükte</span>
-              <h1>
-                İşletmeniz artık bir <span className="ul"><em>karede</em></span>.
-              </h1>
+            <div className="hero-content">
+              <h1>İşletmenizin <em>dijital vitrini.</em><br />Yeniden tanımlandı.</h1>
               <p className="lead">
-                Qare, kafe ve restorandan kuaföre, mağazadan ofise her işletme için
-                QR menü ve kurumsal web sitesini birlikte kurar. Tek seferlik kurulum,
-                markanıza yakışır tasarım, yasal olarak sağlam zemin.
+                Qare, kafe ve restorandan kuaföre, mağazadan ofise her işletme için QR menü ve web sitesini birlikte kurar. Markanıza yakışan, hızlı ve yasaya uygun bir dijital deneyim.
               </p>
               <div className="hero-ctas">
-                <a href="#iletisim" className="btn btn-primary">WhatsApp'tan Yazın</a>
+                <a href="#iletisim" className="btn btn-accent">İletişime Geç</a>
                 <a href="#hizmetler" className="btn btn-outline">Hizmetleri İncele</a>
               </div>
-              <div className="hero-trust">
-                <div className="trust-item">
-                  <span className="trust-num">10dk</span>
-                  <span className="trust-label">görüşme</span>
-                </div>
-                <div className="trust-divider" />
-                <div className="trust-item">
-                  <span className="trust-num">24s</span>
-                  <span className="trust-label">taslak</span>
-                </div>
-                <div className="trust-divider" />
-                <div className="trust-item">
-                  <span className="trust-num">∞</span>
-                  <span className="trust-label">revizyon</span>
-                </div>
-              </div>
             </div>
-            <div data-reveal>
-              <QrArt />
+
+            <HeroQrArt />
+          </div>
+        </section>
+
+        {/* Trust stats */}
+        <section className="trust-section">
+          <div className="wrap">
+            <div className="trust-grid">
+              {TRUST_STATS.map((s) => (
+                <div key={s.label} className="trust-stat" data-reveal>
+                  <div className="trust-num">
+                    <Counter target={s.target} suffix={s.suffix} />
+                  </div>
+                  <div className="trust-label">{s.label}</div>
+                  <div className="trust-note">{s.note}</div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* LAW BANNER */}
-        <div className="law-banner">
-          <div className="wrap">
-            <p>
-              <strong>2026 itibariyle tüm yeme-içme işletmeleri için dijital/QR menü yasal zorunluluk.</strong>{' '}
-              Cezai risk almadan, markanıza uygun bir çözümle bugün geçin.
-            </p>
-            <a href="#iletisim">Hemen başlayın →</a>
-          </div>
-        </div>
-
-        {/* VAATLER */}
-        <section className="vaades">
-          <div className="wrap">
-            <div className="vaades-grid" data-reveal>
-              {VAADES.map((v, i) => <VaadeItem key={v.title} {...v} delay={i * 80} />)}
-            </div>
-          </div>
-        </section>
-
-        {/* HIZMETLER */}
-        <section id="hizmetler" className="divider">
+        {/* Services */}
+        <section id="hizmetler">
           <div className="wrap">
             <div className="section-head" data-reveal>
               <span className="eyebrow">Hizmetler</span>
-              <h2>İki ihtiyaç, tek çözüm ortağı.</h2>
-              <p>İster sadece menünüzü dijitalleştirin, ister işletmenizin tüm dijital yüzeylerini baştan kuralım — ihtiyacınıza göre üç şekilde çalışıyoruz.</p>
+              <h2>İşletmeniz için ne yapıyoruz?</h2>
             </div>
             <div className="services-grid">
-              {SERVICES.map((s) => (
-                <article key={s.num} className={`service-card${s.featured ? ' featured' : ''}`} data-reveal>
-                  <span className="service-num">{s.num}</span>
-                  <h3>{s.title}</h3>
-                  <p className="muted">{s.desc}</p>
-                  <ul>{s.items.map((item) => <li key={item}>{item}</li>)}</ul>
-                </article>
+              {SERVICES.map((s, i) => (
+                <div key={s.name} className={`service-card glass ${s.featured ? 'featured' : ''}`} data-reveal data-reveal-idx={i}>
+                  <div>
+                    <h3>{s.name}</h3>
+                    <p>{s.desc}</p>
+                  </div>
+                  <ul className="service-list">
+                    {s.items.map((it) => <li key={it}>{it}</li>)}
+                  </ul>
+                  <a href="#iletisim" className={`btn ${s.featured ? 'btn-accent' : 'btn-outline'}`}>
+                    {s.featured ? 'Paketi İncele' : 'Bilgi Al'}
+                  </a>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* SEKTÖRLER */}
-        <section id="sektorler" className="divider">
+        {/* Marquee */}
+        <section className="marquee-section">
           <div className="wrap">
-            <div className="section-head" data-reveal>
-              <span className="eyebrow">Sektörler</span>
-              <h2>Sizin işinize özel kurulmuş.</h2>
-              <p>Her sektörün müşterisi farklı davranır. Biz de tasarımı, içeriği ve hatta renkleri ona göre düşünüyoruz.</p>
+            <div className="marquee-label" data-reveal>
+              <span className="eyebrow">Kimler için</span>
+              <h2>Her işletme için bir Qare.</h2>
             </div>
-            <div className="sectors-grid">
-              {SECTORS.map((s) => (
-                <article key={s.name} className="sector-card" data-reveal>
-                  <div className={`sector-icon ${s.color}`} aria-hidden="true">{s.icon}</div>
-                  <h4>{s.name}</h4>
-                  <p>{s.desc}</p>
-                </article>
-              ))}
-            </div>
+          </div>
+          <div className="marquee-track" aria-hidden="true">
+            {[...SECTORS, ...SECTORS].map((s, i) => (
+              <span key={i} className="marquee-item">
+                {s}<span className="marquee-sep">·</span>
+              </span>
+            ))}
           </div>
         </section>
 
-        {/* SÜREÇ */}
-        <section id="surec" className="divider">
+        {/* Steps */}
+        <section id="nasil">
           <div className="wrap">
             <div className="section-head" data-reveal>
               <span className="eyebrow">Nasıl Çalışır</span>
-              <h2>Görüşmeden yayına, dört adım.</h2>
-              <p>Sürecin her adımında siz sadece onay veriyorsunuz; tasarım, içerik ve kurulumu biz üstleniyoruz.</p>
+              <h2>Dört adımda işiniz hazır.</h2>
             </div>
-            <div className="process">
-              {STEPS.map((s) => (
-                <article key={s.num} className={`step ${s.color}`} data-reveal>
-                  <div className="step-num">{s.num}</div>
-                  <span className="time">{s.time}</span>
-                  <h3>{s.title}</h3>
-                  <p>{s.desc}</p>
-                </article>
+            <div className="steps-grid">
+              {STEPS.map((step, i) => (
+                <div key={step.num} className="step-card" data-reveal data-reveal-idx={i}>
+                  <div className="step-num">{step.num}</div>
+                  <span className="step-time">{step.time}</span>
+                  <h3>{step.title}</h3>
+                  <p>{step.desc}</p>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* FİYATLANDIRMA */}
-        <section id="fiyat" className="divider">
+        {/* Why Qare */}
+        <section>
           <div className="wrap">
             <div className="section-head" data-reveal>
-              <span className="eyebrow">Fiyatlandırma</span>
-              <h2>Tek seferlik kurulum, aylık aboneliğe zorlamıyoruz.</h2>
-              <p>Aylık yazılım aboneliği yerine bir defaya mahsus kurulum ücreti — isterseniz uygun fiyatlı bakım desteği.</p>
+              <span className="eyebrow">Neden Qare</span>
+              <h2>Yeni kurulan ama özenli bir ekip.</h2>
+              <p>Her müşteriye, büyük bir ajansın değil, kendi işiymiş gibi yaklaşan bir çalışma şekli.</p>
             </div>
-            <div className="pricing-grid">
-              {PLANS.map((plan) => (
-                <article key={plan.name} className={`price-card${plan.popular ? ' popular' : ''}`} data-reveal>
-                  <h3>{plan.name}</h3>
-                  <div className="price">
-                    {plan.price} {plan.priceSuffix && <span>{plan.priceSuffix}</span>}
-                  </div>
-                  <div className="price-note">{plan.priceNote}</div>
-                  <ul>{plan.items.map((item) => <li key={item}>{item}</li>)}</ul>
-                  <a href="#iletisim" className={`btn ${plan.cta}`}>Bunu İstiyorum</a>
-                </article>
-              ))}
-            </div>
-            <div className="pricing-foot">Gizli ücret yok · Koşulsuz memnuniyet · Sözleşme yok</div>
-          </div>
-        </section>
-
-        {/* SÖZÜMÜZ */}
-        <section className="pledge">
-          <div className="wrap">
-            <div className="pledge-card" data-reveal>
-              <div className="pledge-mark" aria-hidden="true">∞</div>
-              <div>
-                <h3>"Mükemmel" deyene kadar.</h3>
-                <p>
-                  Beğenmediğiniz her detayı değiştiririz. Sınırsız revizyon, koşulsuz memnuniyet.
-                  Bize inanmanız için söz vermiyoruz — teslim ettiğimiz işe inanacaksınız.
-                </p>
+            <div className="why-grid">
+              <div className="why-card glass" data-reveal data-reveal-idx={0}>
+                <div className="why-icon" aria-hidden="true">⚡</div>
+                <h4>Kişisel İlgi</h4>
+                <p>Her projeyi kendim yönetiyorum. Tasarımınızın arkasında ajans değil, doğrudan iletişim kurabileceğiniz bir kişi var.</p>
+              </div>
+              <div className="why-card glass" data-reveal data-reveal-idx={1}>
+                <div className="why-icon" aria-hidden="true">📱</div>
+                <h4>Hızlı İletişim</h4>
+                <p>Saatler içinde yanıt. Bir iş günü bekleyeceğiniz "kurumsal destek hattı" değiliz, gerçek kişilerle konuşursunuz.</p>
+              </div>
+              <div className="why-card glass" data-reveal data-reveal-idx={2}>
+                <div className="why-icon" aria-hidden="true">🔄</div>
+                <h4>Sınırsız Revizyon</h4>
+                <p>Beğenmediğiniz her detayı değiştiriyoruz. Memnun olana kadar revize ediyoruz, sınır yok.</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* KURUCU */}
-        <section className="founder divider">
-          <div className="wrap">
-            <div className="founder-card" data-reveal>
-              <div className="founder-avatar" aria-label="Qare">
-                <img src="/qare-icon-white.png" alt="" />
-              </div>
-              <div>
-                <blockquote>
-                  QR menü, küçük işletmenin en düşük maliyetli dijital dönüşümü.
-                  Bunu herkes için erişilebilir kılmak istedik.
-                </blockquote>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* SSS */}
-        <section id="sss" className="divider">
+        {/* FAQ */}
+        <section id="sss">
           <div className="wrap">
             <div className="section-head" data-reveal>
               <span className="eyebrow">Sıkça Sorulan Sorular</span>
               <h2>Aklınıza takılanlar.</h2>
-              <p>Sorularınız önce siz sorun, biz cevaplayalım — ilk altı soru karar vermek için yeterli.</p>
             </div>
             <div className="faq-list">
               {FAQS.map((item, i) => (
                 <FAQItem
                   key={item.q}
                   item={item}
-                  index={i}
-                  isOpen={openIndex === i}
-                  onClick={() => setOpenIndex((prev) => (prev === i ? null : i))}
+                  isOpen={openFaq === i}
+                  onToggle={() => setOpenFaq(openFaq === i ? null : i)}
                 />
               ))}
             </div>
@@ -501,31 +370,35 @@ export default function App() {
         </section>
 
         {/* CTA */}
-        <section className="cta-section" id="iletisim">
-          <div className="wrap" data-reveal>
-            <h2>İşletmenizi bir karede toplayalım.</h2>
-            <p>Ücretsiz bir örnek görmek ya da sorularınızı sormak için yazın, 24 saat içinde dönüş yapalım.</p>
-            <div className="hero-ctas">
-              <a href="https://wa.me/905000000000" className="btn btn-primary">WhatsApp: +90 500 000 00 00</a>
-              <a href="mailto:info@qare.com.tr" className="btn btn-outline">info@qare.com.tr</a>
+        <section id="iletisim" className="cta-section">
+          <div className="wrap">
+            <div className="section-head" data-reveal style={{ textAlign: 'center', margin: '0 auto 24px' }}>
+              <span className="eyebrow">Başlayalım</span>
+              <h2>İşletmenizi bir karede toplayalım.</h2>
+              <p className="lead">İlk görüşme ücretsiz. İhtiyacınızı dinler, size özel teklif hazırlarız.</p>
+            </div>
+            <div className="cta-buttons" data-reveal>
+              <a href="#iletisim" className="btn btn-accent">İletişime Geç</a>
+              <a href="mailto:hello@qare.app" className="btn btn-outline">E-posta Gönder</a>
             </div>
           </div>
         </section>
       </main>
 
+      {/* Footer */}
       <footer>
         <div className="wrap">
           <div className="footer-grid">
+            <Logo />
             <div className="footer-links">
               <a href="#hizmetler">Hizmetler</a>
-              <a href="#fiyat">Fiyatlandırma</a>
               <a href="#sss">SSS</a>
               <a href="https://instagram.com/qare" target="_blank" rel="noreferrer">Instagram</a>
             </div>
           </div>
           <div className="footer-bottom">
             <span>© 2026 Qare. Tüm hakları saklıdır.</span>
-            <span>QR menü ve kurumsal web sitesi çözümleri.</span>
+            <span>QR menü &amp; kurumsal web sitesi çözümleri</span>
           </div>
         </div>
       </footer>
