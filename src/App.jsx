@@ -219,7 +219,7 @@ function HeroSectorTabs({ active, onChange }) {
 function Logo() {
   return (
     <a href="#top" className="logo" aria-label="Qare">
-      <img src="/qare-logo-white.png" alt="Qare" className="logo-img" />
+      <img src="/qare_logo_full_black.png" alt="Qare" className="logo-img" />
     </a>
   )
 }
